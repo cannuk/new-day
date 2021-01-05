@@ -1,5 +1,6 @@
 {
-  "name": "intentional",
+  "name": "new-day",
+  "homepage": "https://sean.neden.name/new-day/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
