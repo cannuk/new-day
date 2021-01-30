@@ -37,8 +37,8 @@ const tasksSlice = createSlice({
     tasksRemoved: tasksAdapter.removeMany,
   },
 });
-export const getCompleted = (state: RootState) => taskSelectors.selectAll(state).filter((t) => t.complete);
 
 export const { taskAdded, taskRemoved, taskUpdated, tasksUpdated, tasksRemoved } = tasksSlice.actions;
 export const taskSelectors = tasksAdapter.getSelectors((state: RootState) => state.tasks);
+export const getCompleted = (state: RootState) => taskSelectors.selectAll(state).filter((t) => t.complete);
 export default tasksSlice.reducer;

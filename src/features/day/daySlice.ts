@@ -49,6 +49,13 @@ const dayTasksSlice = createSlice({
 
 export const { dayAdded, dayRemoved, dayUpdated, daysUpdated, daysRemoved } = daysSlice.actions;
 export const daySelectors = daysAdapter.getSelectors((state: RootState) => state.days);
+export const getCurrent = (state: RootState) => {
+  const days = daySelectors.selectAll(state);
+  return days.slice(-1).pop();
+};
+
 export const dayTaskSelectors = dayTasksAdapter.getSelectors((state: RootState) => state.dayTasks);
-export const dayTaskReducer = dayTasksSlice.reducer;
+export const { dayTaskAdded, dayTaskRemoved, dayTaskUpdated, dayTasksUpdated, dayTasksRemoved } = dayTasksSlice.actions;
+
+export const dayTasksReducer = dayTasksSlice.reducer;
 export default daysSlice.reducer;

@@ -5,6 +5,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import tasksReducer from '../features/task/taskSlice';
+import daysReducer, { dayTasksReducer } from '../features/day/daySlice';
 
 const persistConfig = {
   key: 'root',
@@ -13,6 +14,8 @@ const persistConfig = {
 
 const rootReducer: any = combineReducers({
   tasks: tasksReducer,
+  days: daysReducer,
+  dayTasks: dayTasksReducer,
 });
 
 const persistedReducer = persistReducer<any>(persistConfig, rootReducer);
