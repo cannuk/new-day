@@ -1,5 +1,7 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
+import { createSelector } from 'reselect';
+import { dayTaskSelectors } from '../day/daySlice';
 
 export enum TaskType {
   Rhythm,
@@ -41,4 +43,14 @@ const tasksSlice = createSlice({
 export const { taskAdded, taskRemoved, taskUpdated, tasksUpdated, tasksRemoved } = tasksSlice.actions;
 export const taskSelectors = tasksAdapter.getSelectors((state: RootState) => state.tasks);
 export const getCompleted = (state: RootState) => taskSelectors.selectAll(state).filter((t) => t.complete);
+export const getUnCompleted = (state: RootState) => taskSelectors.selectAll(state).filter((t) => !t.complete);
+export const getByType = (type: TaskType) => (state: RootState) =>
+  taskSelectors.selectAll(state).filter((t) => t.type === type);
+
+export const getTasksByDay = (dayId: string) =>
+  createSelector([dayTaskSelectors.selectAll, taskSelectors.selectAll], (dt, tasks) => {
+    const taskIds = dt.filter((d) => d.dayId === dayId).map((d) => d.taskId);
+    return tasks.filter((t) => taskIds.includes(t.id));
+  });
+
 export default tasksSlice.reducer;

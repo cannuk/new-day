@@ -16,7 +16,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <PersistGate loading={null} persistor={persistor}>
           <Switch>
-            <Route path="/day/:id" render={({ match }: any) => <Day id={match.id} />} />
+            <Route path="/day/:id" render={({ match }: any) => <Day dayId={match.id} />} />
             <Route path="/" render={() => <CurrentDay />} />
           </Switch>
         </PersistGate>

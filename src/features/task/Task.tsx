@@ -8,8 +8,9 @@ import { TaskMenu } from './taskMenu';
 
 type TaskProps = {
   task: iTask;
+  dayId: string;
 };
-export const Task: FC<TaskProps> = ({ task }) => {
+export const Task: FC<TaskProps> = ({ task, dayId }) => {
   const [taskValue, setTaskValue] = useState('');
   const [complete, setComplete] = useState(false);
   const handleChange = useCallback((ev) => setTaskValue(ev.target.value), []);

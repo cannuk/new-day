@@ -6,7 +6,7 @@ export type Day = {
   created: string;
 };
 
-type DayTask = {
+export type DayTask = {
   id: string;
   dayId: string;
   taskId: string;

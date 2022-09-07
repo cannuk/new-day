@@ -1,19 +1,23 @@
 import React, { FC, useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
+import { nanoid } from 'nanoid';
 
 import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
 import { RootState } from '../../app/store';
-import { taskUpdated, taskSelectors, TaskType, tasksUpdated } from './taskSlice';
+import { taskUpdated, taskSelectors, TaskType } from './taskSlice';
+import { DayTask, dayTaskAdded } from '../day/daySlice';
+
 import { Flex, Input, Checkbox, Label, Box } from 'theme-ui';
 
 type TaskProps = {
   taskId: string;
   taskType: TaskType;
   className?: string;
+  dayId: string;
 };
 
-const ST: FC<TaskProps> = ({ taskId, taskType, className }) => {
+const ST: FC<TaskProps> = ({ taskId, taskType, className, dayId }) => {
   const taskSelector = useMemo(() => taskSelectors.selectById, []);
   let task = useSelector((state: RootState) => taskSelector(state, taskId), shallowEqual);
 
@@ -42,13 +46,20 @@ const ST: FC<TaskProps> = ({ taskId, taskType, className }) => {
             updated: new Date().toString(),
             type: taskType,
           };
+          let dayTask: DayTask = {
+            id: nanoid(),
+            dayId,
+            taskId,
+            created: new Date().toString(),
+          };
+          dispatch(dayTaskAdded(dayTask));
         } else {
           update = { ...task, text: taskValue };
         }
         updateTask(update);
       }
     },
-    [task, taskId, taskType, taskValue, updateTask]
+    [dayId, dispatch, task, taskId, taskType, taskValue, updateTask]
   );
   const handleKeypress = useCallback((ev) => {
     if (ev.key === 'Enter') {
