@@ -1,7 +1,5 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
-// import styled from '@emotion/styled';
-import { Box } from 'theme-ui';
 import { RootState } from '../../app/store';
 import { Task } from './Task';
 import { TaskType, Task as iTask, taskSelectors } from './taskSlice';
@@ -26,10 +24,10 @@ export const TasksList: FC<TasksListProps> = ({ type, dayId }) => {
     return -1;
   });
   return (
-    <Box>
+    <div>
       {listTasks.map((t: iTask) => (
         <Task key={t.id} task={t} dayId={dayId} />
       ))}
-    </Box>
+    </div>
   );
 };

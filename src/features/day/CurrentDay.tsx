@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { Button } from 'theme-ui';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
 import { DayTask, getCurrent } from '../day/daySlice';
 import { taskSelectors, Task, TaskType } from '../task/taskSlice';
@@ -86,5 +85,9 @@ const CreateNewDay = () => {
     });
   }, [tasks, addDay, addTask, addDayTask, updateTask]);
 
-  return <Button onClick={onClick}>Add a Day</Button>;
+  return (
+    <button className="btn btn-primary" onClick={onClick}>
+      Add a Day
+    </button>
+  );
 };

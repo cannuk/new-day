@@ -1,13 +1,11 @@
 import { useSelector } from 'react-redux';
 import { HashRouter as Router, Routes, Route, useParams } from 'react-router-dom';
-import { ThemeProvider } from 'theme-ui';
 import { selectIsAuthenticated, selectAuthInitialized } from './features/auth/authSlice';
 import { Login } from './features/auth/Login';
 import { CurrentDay } from './features/day/CurrentDay';
 import { Day } from './features/day/Day';
 import { useAuthListener } from './hooks/useAuth';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
-import theme from './themes/start';
 
 // Wrapper component to extract params for Day
 function DayRoute() {
@@ -26,48 +24,29 @@ function App() {
 
   // Show loading while checking auth state
   if (!authInitialized) {
-    return (
-      <ThemeProvider theme={theme as any}>
-        <LoadingScreen />
-      </ThemeProvider>
-    );
+    return <LoadingScreen />;
   }
 
   // Not logged in - show login
   if (!isAuthenticated) {
-    return (
-      <ThemeProvider theme={theme as any}>
-        <Login />
-      </ThemeProvider>
-    );
+    return <Login />;
   }
 
   // Logged in - render app
   return (
-    <ThemeProvider theme={theme as any}>
-      <Router>
-        <Routes>
-          <Route path="/day/:id" element={<DayRoute />} />
-          <Route path="/" element={<CurrentDay />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <Routes>
+        <Route path="/day/:id" element={<DayRoute />} />
+        <Route path="/" element={<CurrentDay />} />
+      </Routes>
+    </Router>
   );
 }
 
 function LoadingScreen() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#1a1a2e',
-        color: '#eee',
-      }}
-    >
-      Loading...
+    <div className="flex justify-center items-center h-screen bg-base-200">
+      <span className="loading loading-spinner loading-lg text-primary"></span>
     </div>
   );
 }
