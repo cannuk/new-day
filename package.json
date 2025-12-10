@@ -3,45 +3,29 @@
   "homepage": "https://sean.neden.name/new-day/",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
-    "@emotion/react": "^11.1.4",
-    "@emotion/styled": "^11.0.0",
     "@reduxjs/toolkit": "^1.2.5",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@theme-ui/components": "^0.17.2",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-redux": "^7.1.34",
-    "@types/rebass": "^4.0.7",
-    "@types/styled-components": "^5.1.7",
-    "@types/theme-ui": "^0.6.0",
     "firebase": "^12.6.0",
     "nanoid": "^3.1.20",
     "react": "^18",
     "react-dom": "^18",
-    "react-portal": "^4.2.1",
     "react-redux": "^8",
     "react-router-dom": "^6",
-    "react-scripts": "5.0.1",
-    "rebass": "^4.0.7",
-    "reselect": "^4.0.0",
-    "theme-ui": "^0.17.2",
-    "typescript": "^4.9.5"
+    "reselect": "^4.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
-    "predeploy": "yarn lint && yarn build",
+    "predeploy": "npm run lint && npm run build",
     "deploy": "gh-pages -d build",
     "prepare": "husky"
   },
@@ -54,21 +38,13 @@
       "prettier --write"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.17",
+    "@types/node": "^25.0.0",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "@typescript-eslint/parser": "^8.49.0",
+    "@vitejs/plugin-react": "^5.1.2",
+    "daisyui": "^5.5.11",
     "eslint": "^8",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -78,6 +54,9 @@
     "gh-pages": "^6.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "prettier": "^3.7.4"
+    "prettier": "^3.7.4",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.8.3",
+    "vite": "^7.2.7"
   }
 }

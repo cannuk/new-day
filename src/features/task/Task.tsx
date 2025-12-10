@@ -1,6 +1,4 @@
-import styled from '@emotion/styled';
 import React, { FC, useState, useCallback, useRef, useEffect } from 'react';
-import { Flex, Input, Checkbox, Label } from 'theme-ui';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
 import { TaskMenu } from './taskMenu';
 import { Task as iTask } from './taskSlice';
@@ -9,6 +7,7 @@ type TaskProps = {
   task: iTask;
   dayId: string;
 };
+
 export const Task: FC<TaskProps> = ({ task }) => {
   const [taskValue, setTaskValue] = useState('');
   const [complete, setComplete] = useState(false);
@@ -17,7 +16,7 @@ export const Task: FC<TaskProps> = ({ task }) => {
     []
   );
   const { updateTask } = useFirestoreActions();
-  const inputEl = useRef<any>(null);
+  const inputEl = useRef<HTMLInputElement>(null);
   useEffect(() => {
     setComplete(task.complete);
     setTaskValue(task.text || '');
@@ -29,7 +28,7 @@ export const Task: FC<TaskProps> = ({ task }) => {
   }, [task.id, taskValue, updateTask]);
   const handleKeypress = useCallback((ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key === 'Enter') {
-      inputEl.current.blur();
+      inputEl.current?.blur();
     }
   }, []);
   const handleCheck = useCallback(() => {
@@ -40,34 +39,30 @@ export const Task: FC<TaskProps> = ({ task }) => {
     };
     updateTask(nTask);
   }, [complete, task.id, updateTask]);
+
   return (
-    <StyledFlex paddingBottom={2} paddingTop={2}>
-      <StyledLabel>
-        <Checkbox checked={complete} onChange={handleCheck} />
-      </StyledLabel>
-      <StyledInput
+    <div className="flex items-center gap-3 py-2 group">
+      <input
+        type="checkbox"
+        className={`checkbox checkbox-sm ${complete ? 'checkbox-success' : 'checkbox-primary'}`}
+        checked={complete}
+        onChange={handleCheck}
+      />
+      <input
         ref={inputEl}
+        type="text"
+        className={`input input-sm input-ghost flex-1 focus:input-bordered ${
+          complete ? 'text-base-content/50 line-through' : ''
+        }`}
+        placeholder="Task description..."
         onBlur={handleBlur}
         onKeyDown={handleKeypress}
         onChange={handleChange}
-        bg={complete ? 'background' : 'muted'}
         value={taskValue}
-        color={complete ? 'primary' : 'text'}
-        sx={{ textDecoration: complete ? 'line-through' : 'none' }}
       />
-      <TaskMenu task={task} />
-    </StyledFlex>
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+        <TaskMenu task={task} />
+      </div>
+    </div>
   );
 };
-
-const StyledInput = styled(Input)`
-  border: none;
-`;
-
-const StyledFlex = styled(Flex)`
-  align-items: center;
-`;
-
-const StyledLabel = styled(Label)`
-  width: auto;
-`;

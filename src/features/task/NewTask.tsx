@@ -1,7 +1,5 @@
-import styled from '@emotion/styled';
 import { nanoid } from 'nanoid';
-import React, { FC, useCallback, useState } from 'react';
-import { Flex, Input, Box } from 'theme-ui';
+import { FC, useCallback, useState } from 'react';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
 import { DayTask } from '../day/daySlice';
 import { TaskType, Task } from './taskSlice';
@@ -46,26 +44,27 @@ export const NewTask: FC<NewTaskProps> = ({ taskType, dayId }) => {
   );
 
   return (
-    <StyledFlex paddingTop={3} paddingBottom={3}>
-      <SpaceBox />
-      <StyledInput
-        backgroundColor="primary"
-        placeholder="New Task"
+    <div className="flex items-center gap-3 py-3 mt-2 border-t border-base-200">
+      <div className="w-6 flex justify-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 text-base-content/30"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
+      </div>
+      <input
+        type="text"
+        className="input input-sm input-ghost flex-1 focus:input-bordered placeholder:text-base-content/40"
+        placeholder="Add a new task... (press Enter)"
         onChange={handleChange}
         onKeyDown={onKeypress}
-        bg="background"
-        sx={{ borderColor: 'muted', borderWidth: 2 }}
         value={textVal}
       />
-      <SpaceBox />
-    </StyledFlex>
+      <div className="w-8" />
+    </div>
   );
 };
-
-const StyledInput = styled(Input)``;
-const StyledFlex = styled(Flex)`
-  align-items: center;
-`;
-const SpaceBox = styled(Box)`
-  width: 32px;
-`;
