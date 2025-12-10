@@ -1,7 +1,7 @@
-import React, { FC, useState, useCallback, useRef } from 'react';
+import React, { FC, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from '@emotion/styled';
-import { Task as iTask, tasksRemoved, getCompleted, TaskType, tasksUpdated } from './taskSlice';
+import { tasksRemoved, getCompleted, TaskType, tasksUpdated } from './taskSlice';
 import { NavLink } from 'theme-ui';
 
 export const NewDay: FC<any> = () => {

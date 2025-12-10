@@ -9,7 +9,8 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(git log --all --oneline -- *.yml *.yaml .github/**)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
