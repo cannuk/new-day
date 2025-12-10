@@ -8,16 +8,20 @@ import {
   Unsubscribe,
   writeBatch,
 } from 'firebase/firestore';
-import { db } from './config';
-import { Task } from '../features/task/taskSlice';
 import { Day, DayTask } from '../features/day/daySlice';
+import { Task } from '../features/task/taskSlice';
+import { db } from './config';
 
 // Collection paths helper
 const getUserCollection = (userId: string, collectionName: string) =>
   collection(db, 'users', userId, collectionName);
 
 // Tasks
-export const setTask = async (userId: string, task: Task, merge: boolean = false): Promise<void> => {
+export const setTask = async (
+  userId: string,
+  task: Task,
+  merge: boolean = false
+): Promise<void> => {
   const taskRef = doc(getUserCollection(userId, 'tasks'), task.id);
   await setDoc(taskRef, task, { merge });
 };
@@ -27,7 +31,11 @@ export const deleteTask = async (userId: string, taskId: string): Promise<void> 
   await deleteDoc(taskRef);
 };
 
-export const setTasks = async (userId: string, tasks: Task[], merge: boolean = false): Promise<void> => {
+export const setTasks = async (
+  userId: string,
+  tasks: Task[],
+  merge: boolean = false
+): Promise<void> => {
   const batch = writeBatch(db);
   tasks.forEach((task) => {
     const taskRef = doc(getUserCollection(userId, 'tasks'), task.id);

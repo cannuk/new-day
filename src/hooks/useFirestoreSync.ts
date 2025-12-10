@@ -1,13 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserId } from '../features/auth/authSlice';
-import { tasksReplaced } from '../features/task/taskSlice';
 import { daysReplaced, dayTasksReplaced } from '../features/day/daySlice';
-import {
-  subscribeToTasks,
-  subscribeToDays,
-  subscribeToDayTasks,
-} from '../firebase/firestore';
+import { tasksReplaced } from '../features/task/taskSlice';
+import { subscribeToTasks, subscribeToDays, subscribeToDayTasks } from '../firebase/firestore';
 
 export const useFirestoreSync = () => {
   const dispatch = useDispatch();

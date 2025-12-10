@@ -1,13 +1,11 @@
-import React, { useCallback } from 'react';
+import { nanoid } from 'nanoid';
+import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'theme-ui';
-import { nanoid } from 'nanoid';
-
-import { getCurrent } from './daySlice';
-import { taskSelectors, Task, TaskType } from '../task/taskSlice';
-import { DayTask } from '../day/daySlice';
-import { Day } from './Day';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
+import { DayTask, getCurrent } from '../day/daySlice';
+import { taskSelectors, Task, TaskType } from '../task/taskSlice';
+import { Day } from './Day';
 
 export const CurrentDay = () => {
   const current = useSelector(getCurrent);
@@ -77,10 +75,10 @@ const CreateNewDay = () => {
     });
 
     // Add all new tasks
-    taskTemplates.forEach(task => addTask(task));
+    taskTemplates.forEach((task) => addTask(task));
 
     // Add all dayTasks
-    dayTaskTemplates.forEach(dayTask => addDayTask(dayTask));
+    dayTaskTemplates.forEach((dayTask) => addDayTask(dayTask));
 
     // Migrate other existing tasks (and converted ones) to this day
     [...otherTasks, ...mostToConvert].forEach((t: Task) => {

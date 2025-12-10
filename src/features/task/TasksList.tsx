@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useSelector } from 'react-redux';
 // import styled from '@emotion/styled';
-import { RootState } from '../../app/store';
-import { TaskType, Task as iTask, taskSelectors } from './taskSlice';
 import { Box } from 'theme-ui';
+import { RootState } from '../../app/store';
 import { Task } from './Task';
+import { TaskType, Task as iTask, taskSelectors } from './taskSlice';
 
 type TasksListProps = {
   type: TaskType;
@@ -15,7 +15,7 @@ export const TasksList: FC<TasksListProps> = ({ type, dayId }) => {
   const tasks = useSelector((state: RootState) => {
     return taskSelectors.selectAll(state);
   });
-  let listTasks = tasks.filter((t: iTask) => t.type === type);
+  const listTasks = tasks.filter((t: iTask) => t.type === type);
   listTasks.sort((a, b) => {
     if ((a.complete && b.complete) || (!a.complete && !b.complete)) {
       return 0;

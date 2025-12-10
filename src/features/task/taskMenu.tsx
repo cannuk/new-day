@@ -1,14 +1,10 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React, { useRef, useCallback, useState, FC } from 'react';
-import { useSelector } from 'react-redux';
-
-import { IconButton, Card, Box } from 'theme-ui';
 import styled from '@emotion/styled';
+import { useRef, useCallback, useState, FC } from 'react';
 import { PortalWithState } from 'react-portal';
-import { Task as iTask, TaskType, getByType } from './taskSlice';
+import { useSelector } from 'react-redux';
+import { IconButton, Card, Box } from 'theme-ui';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
+import { Task as iTask, TaskType, getByType } from './taskSlice';
 
 type TaskMenuProps = {
   task: iTask;
@@ -48,10 +44,16 @@ export const TaskMenu: FC<TaskMenuProps> = ({ task }) => {
   }, []);
   return (
     <PortalWithState closeOnOutsideClick closeOnEsc onOpen={onOpen}>
-      {({ openPortal, closePortal, isOpen, portal }) => (
-        <React.Fragment>
+      {({ openPortal, portal }) => (
+        <>
           <StyledIconButton ref={buttonRef} onClick={openPortal}>
-            <svg fill="currentcolor" width="16" height="16" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16">
+            <svg
+              fill="currentcolor"
+              width="16"
+              height="16"
+              preserveAspectRatio="xMidYMid meet"
+              viewBox="0 0 16 16"
+            >
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -69,14 +71,16 @@ export const TaskMenu: FC<TaskMenuProps> = ({ task }) => {
             >
               <UL>
                 {task.type !== TaskType.Most && <LI onClick={onDelete}>Delete</LI>}
-                {task.type !== TaskType.Most && <LI onClick={moveMostImportant}>Move to Most Important</LI>}
+                {task.type !== TaskType.Most && (
+                  <LI onClick={moveMostImportant}>Move to Most Important</LI>
+                )}
                 {task.type !== TaskType.Other && <LI onClick={moveOther}>Move to Other</LI>}
                 {task.type !== TaskType.Quick && <LI onClick={moveQuick}>Move to Quick</LI>}
                 {task.type !== TaskType.PDP && <LI onClick={movePDP}>Move to PDP</LI>}
               </UL>
             </StyledCard>
           )}
-        </React.Fragment>
+        </>
       )}
     </PortalWithState>
   );

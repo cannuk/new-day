@@ -1,11 +1,10 @@
-import React, { FC, useCallback, useState } from 'react';
 import styled from '@emotion/styled';
-import { Flex, Input, Box } from 'theme-ui';
 import { nanoid } from 'nanoid';
-
-import { TaskType, Task } from './taskSlice';
-import { DayTask } from '../day/daySlice';
+import React, { FC, useCallback, useState } from 'react';
+import { Flex, Input, Box } from 'theme-ui';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
+import { DayTask } from '../day/daySlice';
+import { TaskType, Task } from './taskSlice';
 
 type NewTaskProps = {
   taskType: TaskType;
@@ -15,7 +14,10 @@ type NewTaskProps = {
 export const NewTask: FC<NewTaskProps> = ({ taskType, dayId }) => {
   const [textVal, setTextVal] = useState('');
   const { addTask, addDayTask } = useFirestoreActions();
-  const handleChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => setTextVal(ev.target.value), []);
+  const handleChange = useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => setTextVal(ev.target.value),
+    []
+  );
   const onKeypress = useCallback(
     (ev: React.KeyboardEvent<HTMLInputElement>) => {
       setTextVal((ev.target as HTMLInputElement).value);

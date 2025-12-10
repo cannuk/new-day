@@ -10,7 +10,10 @@
       "Bash(xargs kill:*)",
       "Bash(git log --all --oneline -- *.yml *.yaml .github/**)",
       "Bash(mkdir:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn lint:fix:*)",
+      "Bash(echo:*)"
     ]
   }
 }

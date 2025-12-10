@@ -1,15 +1,13 @@
-import React from 'react';
-import { ThemeProvider } from 'theme-ui';
 import { useSelector } from 'react-redux';
 import { HashRouter as Router, Routes, Route, useParams } from 'react-router-dom';
-
-import theme from './themes/start';
-import { Day } from './features/day/Day';
-import { CurrentDay } from './features/day/CurrentDay';
+import { ThemeProvider } from 'theme-ui';
+import { selectIsAuthenticated, selectAuthInitialized } from './features/auth/authSlice';
 import { Login } from './features/auth/Login';
+import { CurrentDay } from './features/day/CurrentDay';
+import { Day } from './features/day/Day';
 import { useAuthListener } from './hooks/useAuth';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
-import { selectIsAuthenticated, selectAuthInitialized } from './features/auth/authSlice';
+import theme from './themes/start';
 
 // Wrapper component to extract params for Day
 function DayRoute() {
@@ -59,14 +57,16 @@ function App() {
 
 function LoadingScreen() {
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      backgroundColor: '#1a1a2e',
-      color: '#eee'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#1a1a2e',
+        color: '#eee',
+      }}
+    >
       Loading...
     </div>
   );

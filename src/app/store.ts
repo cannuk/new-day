@@ -1,9 +1,8 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-
-import tasksReducer from '../features/task/taskSlice';
-import daysReducer, { dayTasksReducer } from '../features/day/daySlice';
 import authReducer from '../features/auth/authSlice';
+import daysReducer, { dayTasksReducer } from '../features/day/daySlice';
+import tasksReducer from '../features/task/taskSlice';
 
 const rootReducer = combineReducers({
   tasks: tasksReducer,
@@ -25,4 +24,9 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string>
+>;
