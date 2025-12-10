@@ -1,79 +1,81 @@
-import React, { FC } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
-import { Grid, Container, Heading, Box } from 'theme-ui';
-import { Flex } from 'rebass';
-import styled from '@emotion/styled';
+import React from "react"
+import { useSelector } from "react-redux"
+import { Grid, Container, Heading, Box } from "theme-ui"
+import { Flex } from "rebass"
+import styled from "@emotion/styled"
 
-import { NewDay } from '../task/NewDay';
-import { TasksList } from '../task/TasksList';
-import { NewTask } from '../task/NewTask';
-import { TaskType, Task as iTask, taskSelectors, getTasksByDay } from '../task/taskSlice';
-import { dayTaskSelectors } from '../day/daySlice';
-import { StaticTask } from '../task/StaticTask';
+import { NewDay } from "../task/NewDay"
+import { TasksList } from "../task/TasksList"
+import { NewTask } from "../task/NewTask"
+import { TaskType, getTasksByDay, Task as iTask } from "../task/taskSlice"
+import { StaticTask } from "../task/StaticTask"
 
 type MatchProps = {
-  dayId: string;
-};
+  dayId: string
+}
 
-export const Day = ({ dayId }: MatchProps) => (
-  <Container p={3}>
-    <Flex as="nav" justifyContent="flex-end">
-      <NewDay />
-    </Flex>
-    <Grid gap={3}>
-      <Box>
-        <Heading>Rhythm</Heading>
-        <Grid columns={[4, '1fr 1fr 1fr 1fr']}>
-          <RhythmSection dayId={dayId} />
+export const Day = ({ dayId }: MatchProps) => {
+  return (
+    <Container p={3}>
+      <Flex as="nav" justifyContent="flex-end">
+        <NewDay />
+      </Flex>
+      <Grid gap={3}>
+        <Box>
+          <Heading>Most Important</Heading>
+          <MostImportantSection dayId={dayId} />
+        </Box>
+        <Box>
+          <Heading>Backlog</Heading>
+          <TasksList type={TaskType.Other} dayId={dayId} />
+          <NewTask taskType={TaskType.Other} dayId={dayId} />
+        </Box>
+        <Grid gap={4} columns={[2, "1fr 1fr"]}>
+          <Box>
+            <Heading>Quick</Heading>
+            <TasksList type={TaskType.Quick} dayId={dayId} />
+            <NewTask taskType={TaskType.Quick} dayId={dayId} />
+          </Box>
+          <Box>
+            <Heading>Pass Delegate or Postpone</Heading>
+            <TasksList type={TaskType.PDP} dayId={dayId} />
+            <NewTask taskType={TaskType.PDP} dayId={dayId} />
+          </Box>
         </Grid>
-      </Box>
-      <Box>
-        <Heading>Most Important</Heading>
-        <MainTask taskType={TaskType.Most} taskId={`most-${dayId}`} dayId={dayId} />
-      </Box>
-      <Box>
-        <Heading>Other</Heading>
-        <TasksList type={TaskType.Other} dayId={dayId} />
-        <NewTask taskType={TaskType.Other} dayId={dayId} />
-      </Box>
-      <Grid gap={4} columns={[2, '1fr 1fr']}>
-        <Box>
-          <Heading>Quick</Heading>
-          <TasksList type={TaskType.Quick} dayId={dayId} />
-          <NewTask taskType={TaskType.Quick} dayId={dayId} />
-        </Box>
-        <Box>
-          <Heading>Pass Delegate or Postpone</Heading>
-          <TasksList type={TaskType.PDP} dayId={dayId} />
-          <NewTask taskType={TaskType.PDP} dayId={dayId} />
-        </Box>
       </Grid>
-    </Grid>
-  </Container>
-);
+    </Container>
+  )
+}
 
-const RhythmSection: FC<MatchProps> = ({ dayId }) => {
-  // const tasks = useSelector((state: RootState) => {
-  //   return taskSelectors.selectAll(state);
-  // });
-  // let taskIds = useSelector((state: RootState) => {
-  //   return dayTaskSelectors
-  //     .selectAll(state)
-  //     .filter((dt) => dt.dayId === dayId)
-  //     .map((t) => t.taskId);
-  // });
-  let tasks = useSelector(getTasksByDay(dayId));
-  let listTasks = tasks.filter((t: iTask) => t.type === TaskType.Rhythm);
+const MostImportantSection: React.FC<MatchProps> = ({ dayId }) => {
+  const tasks = useSelector(getTasksByDay(dayId)) as iTask[]
+  const mostImportantTasks = tasks.filter(
+    (t: iTask) => t.type === TaskType.Most
+  )
+
+  // Always render 3 slots - use existing task IDs or generate placeholder IDs
+  const slots = [0, 1, 2].map((index) => {
+    const task = mostImportantTasks[index]
+    return {
+      key: task?.id || `most-${dayId}-${index}`,
+      taskId: task?.id || `most-${dayId}-${index}`,
+    }
+  })
+
   return (
     <>
-      {listTasks.map((t) => (
-        <StaticTask key={t.id} taskType={TaskType.Rhythm} taskId={t.id} dayId={dayId} />
+      {slots.map((slot) => (
+        <MainTask
+          key={slot.key}
+          taskType={TaskType.Most}
+          taskId={slot.taskId}
+          dayId={dayId}
+        />
       ))}
     </>
-  );
-};
+  )
+}
 
 const MainTask = styled(StaticTask)`
   font-size: 150%;
-`;
+`

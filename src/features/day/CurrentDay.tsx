@@ -1,12 +1,13 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { Button } from 'theme-ui';
 import { nanoid } from 'nanoid';
 
-import { getCurrent, dayAdded, dayTaskAdded } from './daySlice';
-import { taskSelectors, Task, tasksUpdated, TaskType, getByType } from '../task/taskSlice';
-import { DayTask, dayTasksUpdated } from '../day/daySlice';
+import { getCurrent } from './daySlice';
+import { taskSelectors, Task, TaskType } from '../task/taskSlice';
+import { DayTask } from '../day/daySlice';
 import { Day } from './Day';
+import { useFirestoreActions } from '../../hooks/useFirestoreActions';
 
 export const CurrentDay = () => {
   const current = useSelector(getCurrent);
@@ -17,77 +18,75 @@ export const CurrentDay = () => {
 };
 
 const CreateNewDay = () => {
-  const dispatch = useDispatch();
-  const tasks = useSelector(taskSelectors.selectAll);
-  const importantTask = useSelector(getByType(TaskType.Most));
-  const onClick = () => {
-    debugger;
-    const dayId = createDay(dispatch);
-    createTemplateTasks(dispatch, dayId, importantTask);
-    if (tasks) {
-      migrateTasks(dispatch, tasks, dayId);
-    }
-  };
-  return <Button onClick={onClick}>Add a Day</Button>;
-};
+  const tasks = useSelector(taskSelectors.selectAll) as Task[];
+  const { addDay, addTask, addDayTask, updateTask } = useFirestoreActions();
 
-const createDay = (dispatch: any) => {
-  const dayId = nanoid();
-  dispatch(dayAdded({ id: dayId, created: new Date().toString() }));
-  return dayId;
-};
+  const onClick = useCallback(() => {
+    const dayId = nanoid();
 
-const migrateTasks = (dispatch: any, tasks: any, dayId: string) => {
-  if (tasks) {
-    tasks.forEach((t: Task) =>
-      dispatch(dayTaskAdded({ id: nanoid(), dayId, taskId: t.id, created: new Date().toString() }))
-    );
-  }
-};
+    // Create the day
+    addDay({ id: dayId, created: new Date().toString() });
 
-const createTemplateTasks = (dispatch: any, dayId: string, importantTask: Task[]) => {
-  let taskTemplates = [];
-  let dayTaskTemplates = [];
-  for (let x = 0; x < 4; x++) {
-    let taskId = nanoid();
-    let task: Task = {
-      id: taskId,
-      text: '',
-      created: new Date().toString(),
-      updated: new Date().toString(),
-      complete: false,
-      type: TaskType.Rhythm,
-    };
-    let dayTask: DayTask = {
-      id: nanoid(),
-      dayId,
-      taskId,
-      created: new Date().toString(),
-    };
-    taskTemplates.push(task);
-    dayTaskTemplates.push(dayTask);
-  }
-  let imptTaskId;
-  if (importantTask.length === 0) {
-    imptTaskId = nanoid();
-    taskTemplates.push({
-      id: imptTaskId,
-      text: '',
-      created: new Date().toString(),
-      updated: new Date().toString(),
-      complete: false,
-      type: TaskType.Most,
+    // Create template tasks and dayTasks
+    const taskTemplates: Task[] = [];
+    const dayTaskTemplates: DayTask[] = [];
+
+    // Get existing Most Important tasks
+    const existingMostImportant = tasks.filter((t: Task) => t.type === TaskType.Most);
+    const otherTasks = tasks.filter((t: Task) => t.type !== TaskType.Most);
+
+    // Keep first 3 Most Important, convert extras to Other
+    const mostToKeep = existingMostImportant.slice(0, 3);
+    const mostToConvert = existingMostImportant.slice(3);
+
+    // Convert extra Most Important tasks to Other
+    mostToConvert.forEach((t: Task) => {
+      updateTask({ ...t, type: TaskType.Other });
     });
-  } else {
-    imptTaskId = importantTask[0].id;
-  }
 
-  dayTaskTemplates.push({
-    id: nanoid(),
-    dayId,
-    taskId: imptTaskId,
-    created: new Date().toString(),
-  });
-  dispatch(tasksUpdated(taskTemplates));
-  dispatch(dayTasksUpdated(dayTaskTemplates));
+    // Create new Most Important tasks if we have fewer than 3
+    const numToCreate = 3 - mostToKeep.length;
+    for (let x = 0; x < numToCreate; x++) {
+      const taskId = nanoid();
+      const task: Task = {
+        id: taskId,
+        text: '',
+        created: new Date().toString(),
+        updated: new Date().toString(),
+        complete: false,
+        type: TaskType.Most,
+      };
+      const dayTask: DayTask = {
+        id: nanoid(),
+        dayId,
+        taskId,
+        created: new Date().toString(),
+      };
+      taskTemplates.push(task);
+      dayTaskTemplates.push(dayTask);
+    }
+
+    // Add dayTasks for existing Most Important tasks we're keeping
+    mostToKeep.forEach((t: Task) => {
+      dayTaskTemplates.push({
+        id: nanoid(),
+        dayId,
+        taskId: t.id,
+        created: new Date().toString(),
+      });
+    });
+
+    // Add all new tasks
+    taskTemplates.forEach(task => addTask(task));
+
+    // Add all dayTasks
+    dayTaskTemplates.forEach(dayTask => addDayTask(dayTask));
+
+    // Migrate other existing tasks (and converted ones) to this day
+    [...otherTasks, ...mostToConvert].forEach((t: Task) => {
+      addDayTask({ id: nanoid(), dayId, taskId: t.id, created: new Date().toString() });
+    });
+  }, [tasks, addDay, addTask, addDayTask, updateTask]);
+
+  return <Button onClick={onClick}>Add a Day</Button>;
 };

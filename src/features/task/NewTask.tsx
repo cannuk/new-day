@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
 import { Flex, Input, Box } from 'theme-ui';
 import { nanoid } from 'nanoid';
 
-import { TaskType, Task, taskAdded } from './taskSlice';
-import { DayTask, dayTaskAdded } from '../day/daySlice';
+import { TaskType, Task } from './taskSlice';
+import { DayTask } from '../day/daySlice';
+import { useFirestoreActions } from '../../hooks/useFirestoreActions';
 
 type NewTaskProps = {
   taskType: TaskType;
@@ -14,14 +14,14 @@ type NewTaskProps = {
 
 export const NewTask: FC<NewTaskProps> = ({ taskType, dayId }) => {
   const [textVal, setTextVal] = useState('');
-  const dispatch = useDispatch();
-  const handleChange = useCallback((ev) => setTextVal(ev.target.value), []);
+  const { addTask, addDayTask } = useFirestoreActions();
+  const handleChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => setTextVal(ev.target.value), []);
   const onKeypress = useCallback(
-    (ev) => {
-      setTextVal(ev.target.value);
+    (ev: React.KeyboardEvent<HTMLInputElement>) => {
+      setTextVal((ev.target as HTMLInputElement).value);
       if (ev.key === 'Enter' && textVal.trim() !== '') {
         const taskId = nanoid();
-        let task: Task = {
+        const task: Task = {
           id: taskId,
           text: textVal,
           created: new Date().toString(),
@@ -29,18 +29,18 @@ export const NewTask: FC<NewTaskProps> = ({ taskType, dayId }) => {
           complete: false,
           type: taskType,
         };
-        let dayTask: DayTask = {
+        const dayTask: DayTask = {
           id: nanoid(),
           dayId,
           taskId,
           created: new Date().toString(),
         };
         setTextVal('');
-        dispatch(taskAdded(task));
-        dispatch(dayTaskAdded(dayTask));
+        addTask(task);
+        addDayTask(dayTask);
       }
     },
-    [dayId, dispatch, taskType, textVal]
+    [dayId, addTask, addDayTask, taskType, textVal]
   );
 
   return (

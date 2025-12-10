@@ -30,6 +30,7 @@ const daysSlice = createSlice({
     daysUpdated: daysAdapter.upsertMany,
     dayRemoved: daysAdapter.removeOne,
     daysRemoved: daysAdapter.removeMany,
+    daysReplaced: daysAdapter.setAll,
   },
 });
 
@@ -42,12 +43,13 @@ const dayTasksSlice = createSlice({
     dayTasksUpdated: dayTasksAdapter.upsertMany,
     dayTaskRemoved: dayTasksAdapter.removeOne,
     dayTasksRemoved: dayTasksAdapter.removeMany,
+    dayTasksReplaced: dayTasksAdapter.setAll,
   },
 });
 
 // export const getCompleted = (state: RootState) => daySelectors.selectAll(state).filter((t) => t.complete);
 
-export const { dayAdded, dayRemoved, dayUpdated, daysUpdated, daysRemoved } = daysSlice.actions;
+export const { dayAdded, dayRemoved, dayUpdated, daysUpdated, daysRemoved, daysReplaced } = daysSlice.actions;
 export const daySelectors = daysAdapter.getSelectors((state: RootState) => state.days);
 export const getCurrent = (state: RootState) => {
   const days = daySelectors.selectAll(state);
@@ -55,7 +57,7 @@ export const getCurrent = (state: RootState) => {
 };
 
 export const dayTaskSelectors = dayTasksAdapter.getSelectors((state: RootState) => state.dayTasks);
-export const { dayTaskAdded, dayTaskRemoved, dayTaskUpdated, dayTasksUpdated, dayTasksRemoved } = dayTasksSlice.actions;
+export const { dayTaskAdded, dayTaskRemoved, dayTaskUpdated, dayTasksUpdated, dayTasksRemoved, dayTasksReplaced } = dayTasksSlice.actions;
 
 export const dayTasksReducer = dayTasksSlice.reducer;
 export default daysSlice.reducer;

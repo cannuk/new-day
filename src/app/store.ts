@@ -1,28 +1,28 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-
 import { combineReducers } from 'redux';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import tasksReducer from '../features/task/taskSlice';
 import daysReducer, { dayTasksReducer } from '../features/day/daySlice';
+import authReducer from '../features/auth/authSlice';
 
-const persistConfig = {
-  key: 'root',
-  storage,
-};
-
-const rootReducer: any = combineReducers({
+const rootReducer = combineReducers({
   tasks: tasksReducer,
   days: daysReducer,
   dayTasks: dayTasksReducer,
+  auth: authReducer,
 });
-
-const persistedReducer = persistReducer<any>(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore Firestore Timestamp objects in future phases
+        ignoredActions: ['tasks/tasksUpdated', 'days/daysUpdated', 'dayTasks/dayTasksUpdated'],
+      },
+    }),
 });
-export const persistor = persistStore(store);
+
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;

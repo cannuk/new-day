@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(yarn add:*)",
+      "Bash(yarn build:*)",
+      "Bash(yarn install:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(git log --all --oneline -- *.yml *.yaml .github/**)",
+      "Bash(mkdir:*)"
+    ]
+  }
+}

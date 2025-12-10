@@ -12,28 +12,16 @@ export const NewDay: FC<any> = () => {
       .filter((t) => t.type === TaskType.Other || t.type === TaskType.PDP || t.type === TaskType.Quick)
       .map((t) => t.id);
     let update = completedTasks
-      .filter((t) => t.type === TaskType.Most || t.type === TaskType.Rhythm)
-      .map((t) => {
-        if (t.type === TaskType.Most) {
-          return {
-            id: t.id,
-            text: '',
-            complete: false,
-            created: new Date().toString(),
-            updated: new Date().toString(),
-            completed: undefined,
-            type: t.type,
-          };
-        }
-        return {
-          id: t.id,
-          type: t.type,
-          text: t.text,
-          complete: false,
-          created: new Date().toString(),
-          updated: new Date().toString(),
-        };
-      });
+      .filter((t) => t.type === TaskType.Most)
+      .map((t) => ({
+        id: t.id,
+        text: '',
+        complete: false,
+        created: new Date().toString(),
+        updated: new Date().toString(),
+        completed: undefined,
+        type: t.type,
+      }));
     dispatch(tasksUpdated(update));
     dispatch(tasksRemoved(remove));
   }, [completedTasks, dispatch]);

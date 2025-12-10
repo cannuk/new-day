@@ -1,27 +1,74 @@
 import React from 'react';
 import { ThemeProvider } from 'theme-ui';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { HashRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+
 import theme from './themes/start';
-import { PersistGate } from 'redux-persist/integration/react';
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
-
 import { Day } from './features/day/Day';
-
-import { persistor } from './app/store';
 import { CurrentDay } from './features/day/CurrentDay';
+import { Login } from './features/auth/Login';
+import { useAuthListener } from './hooks/useAuth';
+import { useFirestoreSync } from './hooks/useFirestoreSync';
+import { selectIsAuthenticated, selectAuthInitialized } from './features/auth/authSlice';
+
+// Wrapper component to extract params for Day
+function DayRoute() {
+  const { id } = useParams<{ id: string }>();
+  return <Day dayId={id || ''} />;
+}
 
 function App() {
-  return (
-    <Router>
-      <ThemeProvider theme={theme}>
-        <PersistGate loading={null} persistor={persistor}>
-          <Switch>
-            <Route path="/day/:id" render={({ match }: any) => <Day dayId={match.id} />} />
-            <Route path="/" render={() => <CurrentDay />} />
-          </Switch>
-        </PersistGate>
+  // Set up auth listener
+  useAuthListener();
+  // Set up Firestore sync (listens when authenticated)
+  useFirestoreSync();
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const authInitialized = useSelector(selectAuthInitialized);
+
+  // Show loading while checking auth state
+  if (!authInitialized) {
+    return (
+      <ThemeProvider theme={theme as any}>
+        <LoadingScreen />
       </ThemeProvider>
-    </Router>
+    );
+  }
+
+  // Not logged in - show login
+  if (!isAuthenticated) {
+    return (
+      <ThemeProvider theme={theme as any}>
+        <Login />
+      </ThemeProvider>
+    );
+  }
+
+  // Logged in - render app
+  return (
+    <ThemeProvider theme={theme as any}>
+      <Router>
+        <Routes>
+          <Route path="/day/:id" element={<DayRoute />} />
+          <Route path="/" element={<CurrentDay />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
+  );
+}
+
+function LoadingScreen() {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      backgroundColor: '#1a1a2e',
+      color: '#eee'
+    }}>
+      Loading...
+    </div>
   );
 }
 
