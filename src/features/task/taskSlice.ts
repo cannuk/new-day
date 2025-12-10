@@ -1,6 +1,6 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
 import { createSelector } from 'reselect';
+import { RootState } from '../../app/store';
 import { dayTaskSelectors, DayTask } from '../day/daySlice';
 
 export enum TaskType {
@@ -41,7 +41,8 @@ const tasksSlice = createSlice({
   },
 });
 
-export const { taskAdded, taskRemoved, taskUpdated, tasksUpdated, tasksRemoved, tasksReplaced } = tasksSlice.actions;
+export const { taskAdded, taskRemoved, taskUpdated, tasksUpdated, tasksRemoved, tasksReplaced } =
+  tasksSlice.actions;
 export const taskSelectors = tasksAdapter.getSelectors((state: RootState) => state.tasks);
 
 export const getCompleted = createSelector([taskSelectors.selectAll], (tasks: Task[]) =>

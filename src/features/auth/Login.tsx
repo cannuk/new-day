@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Button, Heading, Text } from '@theme-ui/components';
+import React from 'react';
 import { signInWithGoogle } from '../../hooks/useAuth';
 
 export const Login: React.FC = () => {

@@ -1,10 +1,9 @@
-import React, { FC, useState, useCallback, useRef, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { Task as iTask } from './taskSlice';
+import React, { FC, useState, useCallback, useRef, useEffect } from 'react';
 import { Flex, Input, Checkbox, Label } from 'theme-ui';
-
-import { TaskMenu } from './taskMenu';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
+import { TaskMenu } from './taskMenu';
+import { Task as iTask } from './taskSlice';
 
 type TaskProps = {
   task: iTask;
@@ -13,37 +12,34 @@ type TaskProps = {
 export const Task: FC<TaskProps> = ({ task }) => {
   const [taskValue, setTaskValue] = useState('');
   const [complete, setComplete] = useState(false);
-  const handleChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => setTaskValue(ev.target.value), []);
+  const handleChange = useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => setTaskValue(ev.target.value),
+    []
+  );
   const { updateTask } = useFirestoreActions();
   const inputEl = useRef<any>(null);
   useEffect(() => {
     setComplete(task.complete);
     setTaskValue(task.text || '');
   }, [task]);
-  const handleBlur = useCallback(
-    () => {
-      if ((taskValue || '').trim() !== '') {
-        updateTask({ id: task.id, text: taskValue });
-      }
-    },
-    [task.id, taskValue, updateTask]
-  );
+  const handleBlur = useCallback(() => {
+    if ((taskValue || '').trim() !== '') {
+      updateTask({ id: task.id, text: taskValue });
+    }
+  }, [task.id, taskValue, updateTask]);
   const handleKeypress = useCallback((ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key === 'Enter') {
       inputEl.current.blur();
     }
   }, []);
-  const handleCheck = useCallback(
-    () => {
-      const nTask = {
-        id: task.id,
-        complete: !complete,
-        completed: !complete ? new Date().toString() : undefined,
-      };
-      updateTask(nTask);
-    },
-    [complete, task.id, updateTask]
-  );
+  const handleCheck = useCallback(() => {
+    const nTask = {
+      id: task.id,
+      complete: !complete,
+      completed: !complete ? new Date().toString() : undefined,
+    };
+    updateTask(nTask);
+  }, [complete, task.id, updateTask]);
   return (
     <StyledFlex paddingBottom={2} paddingTop={2}>
       <StyledLabel>

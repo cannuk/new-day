@@ -1,8 +1,15 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserId } from '../features/auth/authSlice';
-import { Task, taskAdded, taskUpdated, tasksUpdated, taskRemoved, tasksRemoved } from '../features/task/taskSlice';
 import { Day, DayTask, dayAdded, dayTaskAdded, dayTaskRemoved } from '../features/day/daySlice';
+import {
+  Task,
+  taskAdded,
+  taskUpdated,
+  tasksUpdated,
+  taskRemoved,
+  tasksRemoved,
+} from '../features/task/taskSlice';
 import * as firestoreService from '../firebase/firestore';
 
 export const useFirestoreActions = () => {
