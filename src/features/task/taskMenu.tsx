@@ -2,61 +2,46 @@
 /** @jsx jsx */
 import { jsx } from 'theme-ui';
 import React, { useRef, useCallback, useState, FC } from 'react';
-import { RootState } from '../../app/store';
+import { useSelector } from 'react-redux';
 
 import { IconButton, Card, Box } from 'theme-ui';
 import styled from '@emotion/styled';
 import { PortalWithState } from 'react-portal';
-import { nanoid } from 'nanoid';
-import { taskUpdated, tasksUpdated, Task as iTask, TaskType, taskRemoved, taskSelectors } from './taskSlice';
-import { useDispatch, useSelector } from 'react-redux';
-
-const update = (task: iTask, dispatch: any) => {
-  dispatch(taskUpdated(task));
-};
-
-const deleteTask = (taskId: string, dispatch: any) => {
-  dispatch(taskRemoved(taskId));
-};
-
-const move = (task: iTask, type: TaskType, dispatch: any) => {
-  const nTask = { ...task, type };
-  update(nTask, dispatch);
-};
+import { Task as iTask, TaskType, getByType } from './taskSlice';
+import { useFirestoreActions } from '../../hooks/useFirestoreActions';
 
 type TaskMenuProps = {
   task: iTask;
 };
 export const TaskMenu: FC<TaskMenuProps> = ({ task }) => {
-  const importantTask = useSelector((state: RootState) => taskSelectors.selectById(state, 'most'));
   const [dims, setDims] = useState({ right: 0, top: 0 });
-  const dispatch = useDispatch();
+  const { updateTask, removeTask } = useFirestoreActions();
   const buttonRef = useRef<any>(null);
+  const mostImportantTasks = useSelector(getByType(TaskType.Most)) as iTask[];
 
   const moveOther = useCallback(() => {
-    move(task, TaskType.Other, dispatch);
-  }, [dispatch, task]);
+    updateTask({ ...task, type: TaskType.Other });
+  }, [updateTask, task]);
 
   const moveQuick = useCallback(() => {
-    move(task, TaskType.Quick, dispatch);
-  }, [dispatch, task]);
+    updateTask({ ...task, type: TaskType.Quick });
+  }, [updateTask, task]);
 
   const movePDP = useCallback(() => {
-    move(task, TaskType.PDP, dispatch);
-  }, [dispatch, task]);
+    updateTask({ ...task, type: TaskType.PDP });
+  }, [updateTask, task]);
 
-  const moveImportant = useCallback(() => {
-    const updates = [];
-    if (importantTask && importantTask.text !== '') {
-      updates.push({ ...importantTask, id: nanoid(), type: TaskType.Other });
+  const moveMostImportant = useCallback(() => {
+    // If there are already 3 Most Important tasks, move the last one to Other
+    if (mostImportantTasks.length >= 3) {
+      const lastMost = mostImportantTasks[mostImportantTasks.length - 1];
+      updateTask({ ...lastMost, type: TaskType.Other });
     }
-    updates.push({ ...task, id: 'most', type: TaskType.Most });
-    deleteTask(task.id, dispatch);
-    deleteTask('most', dispatch);
-    dispatch(tasksUpdated(updates));
-  }, [dispatch, importantTask, task]);
+    // Move this task to Most Important
+    updateTask({ ...task, type: TaskType.Most });
+  }, [updateTask, task, mostImportantTasks]);
 
-  const onDelete = useCallback(() => deleteTask(task.id, dispatch), [dispatch, task.id]);
+  const onDelete = useCallback(() => removeTask(task.id), [removeTask, task.id]);
   const onOpen = useCallback(() => {
     const buttonPos = buttonRef.current.getBoundingClientRect();
     setDims({ right: buttonPos.right, top: buttonPos.y });
@@ -81,11 +66,10 @@ export const TaskMenu: FC<TaskMenuProps> = ({ task }) => {
                 left: dims.right - 150,
                 top: dims.top + 40,
               }}
-              // onClick={closePortal}
             >
               <UL>
-                <LI onClick={onDelete}>Delete</LI>
-                {task.type === TaskType.Other && <LI onClick={moveImportant}>Most Important</LI>}
+                {task.type !== TaskType.Most && <LI onClick={onDelete}>Delete</LI>}
+                {task.type !== TaskType.Most && <LI onClick={moveMostImportant}>Move to Most Important</LI>}
                 {task.type !== TaskType.Other && <LI onClick={moveOther}>Move to Other</LI>}
                 {task.type !== TaskType.Quick && <LI onClick={moveQuick}>Move to Quick</LI>}
                 {task.type !== TaskType.PDP && <LI onClick={movePDP}>Move to PDP</LI>}

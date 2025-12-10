@@ -8,9 +8,10 @@ import { Task } from './Task';
 
 type TasksListProps = {
   type: TaskType;
+  dayId: string;
 };
 
-export const TasksList: FC<TasksListProps> = ({ type }) => {
+export const TasksList: FC<TasksListProps> = ({ type, dayId }) => {
   const tasks = useSelector((state: RootState) => {
     return taskSelectors.selectAll(state);
   });
@@ -27,7 +28,7 @@ export const TasksList: FC<TasksListProps> = ({ type }) => {
   return (
     <Box>
       {listTasks.map((t: iTask) => (
-        <Task key={t.id} task={t} />
+        <Task key={t.id} task={t} dayId={dayId} />
       ))}
     </Box>
   );

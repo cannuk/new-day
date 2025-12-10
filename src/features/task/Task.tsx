@@ -1,44 +1,44 @@
 import React, { FC, useState, useCallback, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
-import { Task as iTask, taskUpdated } from './taskSlice';
+import { Task as iTask } from './taskSlice';
 import { Flex, Input, Checkbox, Label } from 'theme-ui';
 
 import { TaskMenu } from './taskMenu';
+import { useFirestoreActions } from '../../hooks/useFirestoreActions';
 
 type TaskProps = {
   task: iTask;
+  dayId: string;
 };
 export const Task: FC<TaskProps> = ({ task }) => {
   const [taskValue, setTaskValue] = useState('');
   const [complete, setComplete] = useState(false);
-  const handleChange = useCallback((ev) => setTaskValue(ev.target.value), []);
-  const dispatch = useDispatch();
+  const handleChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => setTaskValue(ev.target.value), []);
+  const { updateTask } = useFirestoreActions();
   const inputEl = useRef<any>(null);
   useEffect(() => {
     setComplete(task.complete);
-    setTaskValue(task.text);
+    setTaskValue(task.text || '');
   }, [task]);
-  const updateTask = useCallback((updatedTask: any) => dispatch(taskUpdated(updatedTask)), [dispatch]);
   const handleBlur = useCallback(
-    (ev) => {
-      if (taskValue.trim() !== '') {
+    () => {
+      if ((taskValue || '').trim() !== '') {
         updateTask({ id: task.id, text: taskValue });
       }
     },
     [task.id, taskValue, updateTask]
   );
-  const handleKeypress = useCallback((ev) => {
+  const handleKeypress = useCallback((ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key === 'Enter') {
       inputEl.current.blur();
     }
   }, []);
   const handleCheck = useCallback(
-    (ev) => {
+    () => {
       const nTask = {
         id: task.id,
         complete: !complete,
-        completed: !complete ? new Date().toString() : null,
+        completed: !complete ? new Date().toString() : undefined,
       };
       updateTask(nTask);
     },

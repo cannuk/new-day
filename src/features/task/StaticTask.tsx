@@ -1,40 +1,43 @@
 import React, { FC, useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
+import { nanoid } from 'nanoid';
 
-import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
 import { RootState } from '../../app/store';
-import { taskUpdated, taskSelectors, TaskType, tasksUpdated } from './taskSlice';
+import { taskSelectors, TaskType, Task as iTask } from './taskSlice';
+import { DayTask } from '../day/daySlice';
+
 import { Flex, Input, Checkbox, Label, Box } from 'theme-ui';
+import { useFirestoreActions } from '../../hooks/useFirestoreActions';
+import { TaskMenu } from './taskMenu';
 
 type TaskProps = {
   taskId: string;
   taskType: TaskType;
   className?: string;
+  dayId: string;
 };
 
-const ST: FC<TaskProps> = ({ taskId, taskType, className }) => {
+const ST: FC<TaskProps> = ({ taskId, taskType, className, dayId }) => {
   const taskSelector = useMemo(() => taskSelectors.selectById, []);
-  let task = useSelector((state: RootState) => taskSelector(state, taskId), shallowEqual);
+  const task = useSelector((state: RootState) => taskSelector(state, taskId), shallowEqual);
 
   const [taskValue, setTaskValue] = useState('');
   const [complete, setComplete] = useState(false);
-  const handleChange = useCallback((ev) => setTaskValue(ev.target.value), []);
-  const dispatch = useDispatch();
+  const handleChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => setTaskValue(ev.target.value), []);
+  const { updateTask, addTask, addDayTask } = useFirestoreActions();
   const inputEl = useRef<any>(null);
-  const updateTask = useCallback((updatedTask: any) => dispatch(taskUpdated(updatedTask)), [dispatch]);
   useEffect(() => {
     if (task) {
       setComplete(task.complete);
-      setTaskValue(task.text);
+      setTaskValue(task.text || '');
     }
   }, [task]);
   const handleBlur = useCallback(
-    (ev) => {
-      if (taskValue.trim() !== '') {
-        let update;
+    () => {
+      if ((taskValue || '').trim() !== '') {
         if (!task) {
-          update = {
+          const newTask = {
             id: taskId,
             text: taskValue,
             complete: false,
@@ -42,25 +45,32 @@ const ST: FC<TaskProps> = ({ taskId, taskType, className }) => {
             updated: new Date().toString(),
             type: taskType,
           };
+          const dayTask: DayTask = {
+            id: nanoid(),
+            dayId,
+            taskId,
+            created: new Date().toString(),
+          };
+          addTask(newTask);
+          addDayTask(dayTask);
         } else {
-          update = { ...task, text: taskValue };
+          updateTask({ ...task, text: taskValue });
         }
-        updateTask(update);
       }
     },
-    [task, taskId, taskType, taskValue, updateTask]
+    [dayId, task, taskId, taskType, taskValue, addTask, addDayTask, updateTask]
   );
-  const handleKeypress = useCallback((ev) => {
+  const handleKeypress = useCallback((ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key === 'Enter') {
       inputEl.current.blur();
     }
   }, []);
   const handleCheck = useCallback(
-    (ev) => {
+    () => {
       const nTask = {
         id: taskId,
         complete: !complete,
-        completed: !complete ? new Date().toString() : null,
+        completed: !complete ? new Date().toString() : undefined,
       };
       updateTask(nTask);
     },
@@ -81,7 +91,7 @@ const ST: FC<TaskProps> = ({ taskId, taskType, className }) => {
         sx={{ textDecoration: complete ? 'line-through' : 'none' }}
         value={taskValue}
       />
-      <SpaceBox />
+      {task ? <TaskMenu task={task as iTask} /> : <SpaceBox />}
     </StyledFlex>
   );
 };
