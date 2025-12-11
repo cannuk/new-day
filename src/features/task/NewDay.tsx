@@ -1,9 +1,10 @@
 import { FC, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { tasksRemoved, getCompleted, TaskType, tasksUpdated } from './taskSlice';
+import { useSelector } from 'react-redux';
+import { useFirestoreActions } from '../../hooks/useFirestoreActions';
+import { getCompleted, TaskType } from './taskSlice';
 
 export const NewDay: FC = () => {
-  const dispatch = useDispatch();
+  const { updateTasks, removeTasks } = useFirestoreActions();
   const completedTasks = useSelector(getCompleted);
   const handleClick = useCallback(() => {
     const remove = completedTasks
@@ -22,9 +23,9 @@ export const NewDay: FC = () => {
         completed: undefined,
         type: t.type,
       }));
-    dispatch(tasksUpdated(update));
-    dispatch(tasksRemoved(remove));
-  }, [completedTasks, dispatch]);
+    updateTasks(update);
+    removeTasks(remove);
+  }, [completedTasks, updateTasks, removeTasks]);
   return (
     <button className="btn btn-primary btn-sm gap-2" onClick={handleClick}>
       <svg

@@ -252,18 +252,41 @@ const MostImportantSection: React.FC<MatchProps> = ({ dayId }) => {
   const tasks = useSelector(getTasksByDay(dayId)) as iTask[];
   const mostImportantTasks = tasks.filter((t: iTask) => t.type === TaskType.Most);
 
-  // Always render 3 slots - use existing task IDs or generate placeholder IDs
-  const slots = [0, 1, 2].map((index) => {
-    const task = mostImportantTasks[index];
-    return {
-      key: task?.id || `most-${dayId}-${index}`,
-      taskId: task?.id || `most-${dayId}-${index}`,
-    };
-  });
+  // Generate stable placeholder IDs for empty slots
+  const placeholderIds = React.useMemo(
+    () => [`most-${dayId}-slot-0`, `most-${dayId}-slot-1`, `most-${dayId}-slot-2`],
+    [dayId]
+  );
+
+  // Build slots: first use existing tasks, then fill remaining with placeholders
+  const slots = React.useMemo(() => {
+    const result: { key: string; taskId: string }[] = [];
+    const usedPlaceholders = new Set<string>();
+
+    // First, add all existing tasks
+    mostImportantTasks.slice(0, 3).forEach((task) => {
+      // Check if this task's ID matches a placeholder pattern
+      const placeholderMatch = placeholderIds.find((p: string) => p === task.id);
+      if (placeholderMatch) {
+        usedPlaceholders.add(placeholderMatch);
+      }
+      result.push({ key: task.id, taskId: task.id });
+    });
+
+    // Fill remaining slots with unused placeholders
+    for (const placeholderId of placeholderIds) {
+      if (result.length >= 3) break;
+      if (!usedPlaceholders.has(placeholderId)) {
+        result.push({ key: placeholderId, taskId: placeholderId });
+      }
+    }
+
+    return result;
+  }, [mostImportantTasks, placeholderIds]);
 
   return (
     <div className="space-y-2">
-      {slots.map((slot, index) => (
+      {slots.map((slot: { key: string; taskId: string }, index: number) => (
         <div key={slot.key} className="flex items-center gap-2">
           <div className="badge badge-primary badge-lg">{index + 1}</div>
           <div className="flex-1">
