@@ -52,6 +52,7 @@ const CreateNewDay = () => {
         updated: new Date().toString(),
         complete: false,
         type: TaskType.Most,
+        originDayId: dayId,
       };
       const dayTask: DayTask = {
         id: nanoid(),

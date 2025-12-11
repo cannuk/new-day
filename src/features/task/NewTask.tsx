@@ -28,6 +28,7 @@ export const NewTask: FC<NewTaskProps> = ({ taskType, dayId }) => {
           updated: new Date().toString(),
           complete: false,
           type: taskType,
+          originDayId: dayId,
         };
         const dayTask: DayTask = {
           id: nanoid(),

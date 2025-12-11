@@ -19,6 +19,7 @@ export type Task = {
   completed?: string;
   complete: boolean;
   type: TaskType;
+  originDayId?: string; // The day this task was originally created on
 };
 
 const tasksAdapter = createEntityAdapter<Task>({

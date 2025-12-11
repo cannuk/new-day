@@ -42,6 +42,7 @@ export const StaticTask: FC<TaskProps> = ({ taskId, taskType, className, dayId }
           created: new Date().toString(),
           updated: new Date().toString(),
           type: taskType,
+          originDayId: dayId,
         };
         const dayTask: DayTask = {
           id: nanoid(),
