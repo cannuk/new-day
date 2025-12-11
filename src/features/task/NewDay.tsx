@@ -1,31 +1,45 @@
+import { nanoid } from 'nanoid';
 import { FC, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useFirestoreActions } from '../../hooks/useFirestoreActions';
-import { getCompleted, TaskType } from './taskSlice';
+import { DayTask } from '../day/daySlice';
+import { getTasksByDay, TaskType, Task } from './taskSlice';
 
-export const NewDay: FC = () => {
-  const { updateTasks, removeTasks } = useFirestoreActions();
-  const completedTasks = useSelector(getCompleted);
+type NewDayProps = {
+  currentDayId: string;
+};
+
+export const NewDay: FC<NewDayProps> = ({ currentDayId }) => {
+  const { addDay, addDayTask } = useFirestoreActions();
+  // Only get tasks from the current day
+  const currentDayTasks = useSelector(getTasksByDay(currentDayId)) as Task[];
+  const incompleteTasks = currentDayTasks.filter((t: Task) => !t.complete);
+
   const handleClick = useCallback(() => {
-    const remove = completedTasks
-      .filter(
-        (t) => t.type === TaskType.Other || t.type === TaskType.PDP || t.type === TaskType.Quick
-      )
-      .map((t) => t.id);
-    const update = completedTasks
-      .filter((t) => t.type === TaskType.Most)
-      .map((t) => ({
-        id: t.id,
-        text: '',
-        complete: false,
+    // Create a new day
+    const newDayId = nanoid();
+    addDay({ id: newDayId, created: new Date().toString() });
+
+    // Incomplete Most Important tasks carry over to new day
+    const incompleteMostTasks = incompleteTasks.filter((t: Task) => t.type === TaskType.Most);
+
+    // Incomplete non-Most tasks carry over to new day
+    const incompleteOtherTasks = incompleteTasks.filter((t: Task) => t.type !== TaskType.Most);
+
+    // Create dayTasks for all incomplete tasks that should be in the new day
+    const allTasksForNewDay = [...incompleteMostTasks, ...incompleteOtherTasks];
+    allTasksForNewDay.forEach((task: Task) => {
+      const dayTask: DayTask = {
+        id: nanoid(),
+        dayId: newDayId,
+        taskId: task.id,
         created: new Date().toString(),
-        updated: new Date().toString(),
-        completed: undefined,
-        type: t.type,
-      }));
-    updateTasks(update);
-    removeTasks(remove);
-  }, [completedTasks, updateTasks, removeTasks]);
+      };
+      addDayTask(dayTask);
+    });
+
+    // Completed tasks stay in their original day (no deletion or updates needed)
+  }, [incompleteTasks, addDay, addDayTask]);
   return (
     <button className="btn btn-primary btn-sm gap-2" onClick={handleClick}>
       <svg

@@ -25,8 +25,13 @@ export const setTask = async (
   task: Task,
   merge: boolean = false
 ): Promise<void> => {
-  const taskRef = doc(getUserCollection(userId, 'tasks'), task.id);
-  await setDoc(taskRef, task, { merge });
+  try {
+    const taskRef = doc(getUserCollection(userId, 'tasks'), task.id);
+    await setDoc(taskRef, task, { merge });
+  } catch (error) {
+    console.error('Error saving task to Firestore:', error);
+    throw error;
+  }
 };
 
 export const deleteTask = async (userId: string, taskId: string): Promise<void> => {

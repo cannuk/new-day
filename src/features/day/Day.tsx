@@ -49,7 +49,7 @@ export const Day = ({ dayId }: MatchProps) => {
               />
             </svg>
           </button>
-          <NewDay />
+          <NewDay currentDayId={dayId} />
         </div>
       </div>
 
