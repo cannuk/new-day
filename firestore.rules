@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // User document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Tasks subcollection
+      match /tasks/{taskId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // Days subcollection
+      match /days/{dayId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // DayTasks subcollection
+      match /dayTasks/{dayTaskId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}

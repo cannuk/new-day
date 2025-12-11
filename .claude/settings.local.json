@@ -18,7 +18,10 @@
       "Bash(npx tailwindcss:*)",
       "Bash(./node_modules/.bin/tailwindcss:*)",
       "Bash(npm ls:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(cat:*)",
+      "Bash(curl:*)",
+      "Bash(source ~/.zshrc)"
     ]
   }
 }
