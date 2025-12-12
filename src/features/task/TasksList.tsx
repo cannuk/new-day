@@ -1,8 +1,7 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
 import { Task } from './Task';
-import { TaskType, Task as iTask, taskSelectors } from './taskSlice';
+import { TaskType, Task as iTask, getTasksByDay } from './taskSlice';
 
 type TasksListProps = {
   type: TaskType;
@@ -10,10 +9,9 @@ type TasksListProps = {
 };
 
 export const TasksList: FC<TasksListProps> = ({ type, dayId }) => {
-  const tasks = useSelector((state: RootState) => {
-    return taskSelectors.selectAll(state);
-  });
-  const listTasks = tasks.filter((t: iTask) => t.type === type);
+  // Get only tasks associated with this specific day
+  const dayTasks = useSelector(getTasksByDay(dayId)) as iTask[];
+  const listTasks = dayTasks.filter((t: iTask) => t.type === type);
   listTasks.sort((a, b) => {
     if ((a.complete && b.complete) || (!a.complete && !b.complete)) {
       return 0;
