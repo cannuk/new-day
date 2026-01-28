@@ -21,7 +21,8 @@
       "Bash(npm uninstall:*)",
       "Bash(cat:*)",
       "Bash(curl:*)",
-      "Bash(source ~/.zshrc)"
+      "Bash(source ~/.zshrc)",
+      "Bash(grep:*)"
     ]
   }
 }
